@@ -53,12 +53,6 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     TextView mCategoriesTextview;
 
 
-
-
-
-
-
-
     @OnClick(R.id.delete_button)
     public void clickDelete(View view) {
 
@@ -66,7 +60,6 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         bookIntent.putExtra(BookService.EAN, ean);
         bookIntent.setAction(BookService.DELETE_BOOK);
         getActivity().startService(bookIntent);
-       // getActivity().getSupportFragmentManager().popBackStack();
         if (!Utilities.isTablet(getActivity())) {
             getActivity().finish();
         } else {
@@ -155,13 +148,18 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         String desc = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.DESC));
         mFullBookDescTextView.setText(desc);
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
-        String[] authorsArr = authors.split(",");
-        mAuthorsTextView.setLines(authorsArr.length);
-        mAuthorsTextView.setText(authors.replace(",", "\n"));
+        String[] authorsArr;
+        if(!authors.isEmpty()){
+            authorsArr = authors.split(",");
+            mAuthorsTextView.setLines(authorsArr.length);
+            mAuthorsTextView.setText(authors.replace(",", "\n"));
+
+        }else{
+            mAuthorsTextView.setLines(1);
+            mAuthorsTextView.setText("No Author");
+        }
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
         if(Patterns.WEB_URL.matcher(imgUrl).matches()){
-            //new DownloadImage((ImageView) rootView.findViewById(R.id.fullBookCover)).execute(imgUrl);
-            //rootView.findViewById(R.id.fullBookCover).setVisibility(View.VISIBLE);
             Glide.with(this)
                     .load(imgUrl)
                     .error(R.drawable.ic_launcher)
